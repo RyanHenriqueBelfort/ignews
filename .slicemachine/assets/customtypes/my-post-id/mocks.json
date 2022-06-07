@@ -1,0 +1,21 @@
+{
+  "id": "fb69e401-d1f6-41bf-83d8-a3f34fe15c21",
+  "uid": "corrupti-aut-aut",
+  "type": "my-post-id",
+  "data": {
+    "Title": [
+      {
+        "type": "heading1",
+        "text": "Syndicate value-added niches",
+        "spans": []
+      }
+    ],
+    "Content": [
+      {
+        "type": "paragraph",
+        "text": "Dolore nulla cillum irure mollit sit laborum consectetur. Ex id commodo aliqua tempor Lorem eiusmod aliqua velit consequat sint est sunt dolore.",
+        "spans": []
+      }
+    ]
+  }
+}
