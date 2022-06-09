@@ -4,6 +4,7 @@ import * as prismic from '@prismicio/client'
 import { getPrismicClient } from '../../services/prismic'
 import * as prismicH from '@prismicio/helpers'
 import styles from './styles.module.scss';
+import Link from 'next/link';
 
 type Post = {
   slug: string
@@ -17,16 +18,6 @@ interface PostsProps {
 }
 
 export default function Posts({ posts }: PostsProps) {
-  {
-    posts.map(post => {
-      console.log(post.content)
-      return (
-        <div key={post.slug}>
-          <h1>{post.title}</h1>
-        </div>
-      )
-    })
-  }
   return (
     <>
       <Head>
@@ -36,11 +27,13 @@ export default function Posts({ posts }: PostsProps) {
       <main className={styles.container}>
         <div className={styles.posts}>
           {posts.map(post => (
-              <a key={post.slug} href="#">
+            <Link href={`/posts/${post.slug}`}>
+              <a key={post.slug} >
                 <strong>{post.title}</strong>
                 <time>{post.updatedAt}</time>
                 <p>{post.content}</p>
               </a>   
+            </Link>
           ))}
         </div>
       </main>

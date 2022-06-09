@@ -20,7 +20,7 @@ interface PrismicConfig {
   previewData?: any
 }
 
-export function getPrismicClient(config: PrismicConfig){
+export function getPrismicClient(config?: PrismicConfig){
   const client = prismic.createClient(endpoint, {
     accessToken: process.env.PRISMIC_ACCESS_TOKEN,
     ...config,
@@ -30,7 +30,7 @@ export function getPrismicClient(config: PrismicConfig){
   enableAutoPreviews({
     client,
     previewData: config?.previewData,
-    req: config.req,
+    req: config?.req,
   })
   return client
 }
