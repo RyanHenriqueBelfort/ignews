@@ -1,13 +1,14 @@
-import { GetStaticProps } from "next"
-import { getSession, useSession } from "next-auth/react"
+import { GetStaticPaths, GetStaticProps } from "next"
+import { useSession } from "next-auth/react"
 import { getPrismicClient } from "../../../services/prismic"
 import * as prismicH from '@prismicio/helpers'
 import Head from "next/head"
+import Link from "next/link"
 
 import styles from '../post.module.scss'
-import Link from "next/link"
 import { useEffect } from "react"
 import { useRouter } from "next/router"
+import { redirect } from "next/dist/server/api-utils"
 
 interface PostPreviewProps {
   post: {
@@ -19,6 +20,14 @@ interface PostPreviewProps {
 }
 
 export default function PostPreview({ post }: PostPreviewProps){
+  const {data: session} = useSession()
+  const router = useRouter()
+
+  useEffect(()=> {
+    if(session?.activeSubscription){
+      router.push(`/posts/${post.slug}`)
+    }
+  }, [session])
   return(
     <>
       <Head>
@@ -46,23 +55,29 @@ export default function PostPreview({ post }: PostPreviewProps){
   )
 }
 
-export const getStaticPaths = ()=>{
+export const getStaticPaths: GetStaticPaths = async ()=>{
   return {
     paths: [],
     fallback: 'blocking'
   }
+   // fallback: true, false, blocking
+    // TRUE -> carrega a pagina e caso o conteudo do post nao esteja ja carregado de forma estatica
+    // ele faz a requisição ()
+    // FALSE -> caso não tenha o post de forma estatica ja gerado no servidor ele retorna um 404
+    // ele não tenta buscar um novo post...fazer a requisicao
+    // 'blocking' -> é parecido com o true, porem caso nao tenha o conteudo estatico ele faz a
+    // requisiçao de forma SSR (ServerSideRendering) e deixa de forma estatica
+
+    /*
+      o mais usado é ou o blocking (caso tenha conteudo q pode surgir novos conteudos) ou o false
+      que da erro 404 caso nao tenha de forma estatica...
+      obs.: Tem como fazer um map no banco e buscar todos os slugs e passar de forma direta para o paths
+      assim deixando o fallback como true a cada revalidate ele executa esta ação para o banco e não perde
+      os pre processadores do google de indexação
+    */
 }
 
 export const getStaticProps: GetStaticProps = async ({params}) =>{
-  const {data: session} = useSession()
-  const router = useRouter()
-
-  useEffect(()=> {
-    if(session?.activeSubscription){
-      router.push(`/posts/${post.slug}`)
-    }
-  }, [session])
-
   const {slug} = params
 
   const prismic = getPrismicClient()
@@ -88,6 +103,7 @@ export const getStaticProps: GetStaticProps = async ({params}) =>{
   return {
     props: {
       post
-    }
+    },
+    redirect: 60 * 30,
   }
 }
